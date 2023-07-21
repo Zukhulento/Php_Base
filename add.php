@@ -1,17 +1,24 @@
 <?php
+  require "database.php";
   if ($_SERVER["REQUEST_METHOD"] == "POST"){
-    $contact = [
-      "name" => $_POST["name"],
-      "phone_number" => $_POST["phone_number"]
-    ];
+    // $contact = [
+    //   "name" => $_POST["name"],
+    //   "phone_number" => $_POST["phone_number"]
+    // ];
 
-    if (file_exists("contacts.json")) {
-      $contacts = json_decode(file_get_contents("contacts.json"), true);
-    } else {
-      $contacts = [];
-    }
-    $contacts[] = $contact;
-    file_put_contents("contacts.json", json_encode($contacts));
+    // if (file_exists("contacts.json")) {
+    //   $contacts = json_decode(file_get_contents("contacts.json"), true);
+    // } else {
+    //   $contacts = [];
+    // }
+    // $contacts[] = $contact;
+    // file_put_contents("contacts.json", json_encode($contacts));
+
+    $name = $_POST["name"];
+    $phoneNumber = $_POST["phone_number"];
+    $statement = $connection->prepare("INSERT INTO contacts (name, phone_number) VALUES ('$name', '$phoneNumber')");
+    $statement->execute();
+
     header("Location: index.php");
   }
 ?>
@@ -37,6 +44,7 @@
     ></script>
     <!-- Static Content -->
     <link rel="stylesheet" href="./static/css/index.css" />
+    <link rel="icon" href="./static/img/dev_24012.png" type="image/x-icon">
     <title>Contacts App</title>
   </head>
   <body>
