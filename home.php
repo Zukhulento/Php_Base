@@ -24,7 +24,7 @@ if (!isset($_SESSION["user"])) {
   return;
 } 
 
-$contacts = $connection->query("SELECT * FROM contacts");
+$contacts = $connection->query("SELECT * FROM contacts WHERE user_id = {$_SESSION['user']['id']} ");
 ?>
 <?php require "partials/header.php"; ?>
 <div class="container pt-4 p-3">

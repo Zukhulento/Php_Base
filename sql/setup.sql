@@ -1,4 +1,4 @@
-DROP DATABASE contacts_app;
+DROP DATABASE IF EXISTS contacts_app;
 
 CREATE DATABASE contacts_app;
 
@@ -14,8 +14,9 @@ CREATE TABLE users (
 CREATE TABLE contacts (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255),
-  phone_number VARCHAR(255) 
-);
+  user_id INT NOT NULL,
+  phone_number VARCHAR(255) ,
+ 
 
-INSERT INTO contacts (name, phone_number) VALUES ("Pepe","1234567890");
-INSERT INTO contacts (name, phone_number) VALUES ("Nate","781322131");
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
