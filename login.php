@@ -2,28 +2,30 @@
 require "database.php";
 $error = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (empty($_POST["name"]) || empty($_POST["email"]) || empty($_POST["password"])) {
+  if ( empty($_POST["email"]) || empty($_POST["password"])) {
     $error = "Please fill all the fields";
   } else if (!str_contains($_POST["email"], "@")) {
     $error = "Email format is invalid";
   } else if (strlen($_POST["password"]) < 8) {
     $error = "Password must have at least 8 characters";
   } else {
-    $statement = $connection->prepare("SELECT * FROM users WHERE email = :email");
+    $statement = $connection->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
     $statement->bindParam(":email", $_POST["email"]);
     $statement->execute();
 
-    if ($statement->rowCount() > 0) {
-      $error = "Email already exists";
+    if ($statement->rowCount() == 0) {
+      $error = "Invalid Credentials";
     } else {
-      $connection
-        ->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)")
-        ->execute([
-          ":name" => $_POST["name"],
-          ":email" => $_POST["email"],
-          ":password" => password_hash($_POST["password"], PASSWORD_BCRYPT)
-        ]);
-      header("Location: login.php");
+      $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+      if (!password_verify($_POST["password"], $user["password"])) {
+        $error = "Invalid Credentials";
+      }else {
+        session_start();//En esta parte se inicia sesión y se nos dispone de la variable global $_SESSION
+        unset($user["password"]);//Aquí borramos la password para no tenerla en la sesión
+        $_SESSION["user"] = $user;//Aquí guardamos el usuario en la sesión
+        header("Location: home.php");
+      }
     }
   }
 }
@@ -38,17 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?= $error ?>
           </p>
         <?php endif ?>
-        <div class="card-header">Register</div>
+        <div class="card-header">Login</div>
         <div class="card-body">
-          <form method="POST" action="register.php">
-            <div class="mb-3 row">
-              <label for="name" class="col-md-4 col-form-label text-md-end">Name</label>
-
-              <div class="col-md-6">
-                <input id="name" type="text" class="form-control" name="name" required autocomplete="name" autofocus />
-              </div>
-            </div>
-
+          <form method="POST" action="login.php">
             <div class="mb-3 row">
               <label for="email" class="col-md-4 col-form-label text-md-end">Email</label>
 

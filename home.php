@@ -17,6 +17,13 @@
 
 // Tercera versión con base de datos
 require_once "database.php";
+
+session_start();
+if (!isset($_SESSION["user"])) {
+  header("Location: login.php");
+  return;
+} 
+
 $contacts = $connection->query("SELECT * FROM contacts");
 ?>
 <?php require "partials/header.php"; ?>

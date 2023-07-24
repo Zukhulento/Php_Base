@@ -23,7 +23,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           ":email" => $_POST["email"],
           ":password" => password_hash($_POST["password"], PASSWORD_DEFAULT)
         ]);
-      header("Location: login.php");
+        $statement = $connection->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $statement->bindParam(":email", $_POST["email"]);
+        $statement->execute();
+        $user = $statement->fetch(PDO::FETCH_ASSOC);session_start();//En esta parte se inicia sesión y se nos dispone de la variable global $_SESSION
+        unset($user["password"]);//Aquí borramos la password para no tenerla en la sesión
+        $_SESSION["user"] = $user;
+      header("Location: home.php");
     }
   }
 }
