@@ -17,13 +17,15 @@ if ($statement->rowCount() == 0) {
     return;
 }
 $contact = $statement->fetch(PDO::FETCH_ASSOC);
-if($contact["user_id"] != $_SESSION["user"]["id"]){
+if ($contact["user_id"] != $_SESSION["user"]["id"]) {
     http_response_code(403);
     echo "HTTP 403 UNAUTHORIZED";
     return;
-}	
+}
 
 $statement = $connection->prepare("DELETE FROM contacts WHERE id = :id");
 $statement->bindParam(":id", $id);
 $statement->execute();
+$_SESSION["flash"] = ["message" => "Contact {$_POST['name']} deleted successfully"];
 header("Location: home.php");
+return;
